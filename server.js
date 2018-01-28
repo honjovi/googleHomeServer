@@ -1,9 +1,14 @@
 const googlehome = require('google-home-notifier');
 const restify = require('restify');
+const log4js = require('log4js');
+
+log4js.configure('log-config.json');
+const logger = log4js.getLogger('system');
+
 const language = 'ja';
 
 const sayTommorrowWeather = (req, res, next) => {
-	console.log(`tommorrow: ${req.query.condition}`);
+	logger.info(`GET /tommorrow-weather condition: "${req.query.condition}"`);
 	const dialogue = `明日の天気は${req.query.condition}です`;
 	notify(dialogue);
 	res.send('OK');
@@ -11,7 +16,7 @@ const sayTommorrowWeather = (req, res, next) => {
 }
 
 const sayTodayWeather = (req, res, next) => {
-	console.log(`today: ${req.query.condition}`);
+	logger.info(`GET /today-weather condition: "${req.query.condition}"`);
 	const dialogue = `今日の天気は${req.query.condition}です`;
 	notify(dialogue);
 	res.send('OK');
@@ -19,7 +24,7 @@ const sayTodayWeather = (req, res, next) => {
 }
 
 const sayTVProgram = (req, res, next) => {
-	console.log(`program title: ${req.body.title}`);
+	logger.info(`GET /tv-program title: "${req.body.title}"`);
 	const dialogue = `今から、${req.body.title}がはじまります`;
 	notify(dialogue);
 	res.send('OK');
@@ -29,7 +34,7 @@ const sayTVProgram = (req, res, next) => {
 const notify = (dialogue) => {
 	googlehome.device('Google-Home', language);
 	googlehome.notify(dialogue, (res) => {
-		console.log(res);
+		logger.info(`Google Home: "${res}"`);
 	});
 }
 
@@ -42,5 +47,5 @@ server.get('/tommorrow-weather', sayTommorrowWeather);
 server.post('/tv-program', sayTVProgram);
 
 server.listen(8080, () => {
-	console.log(`${server.name} listening at ${server.url}`);
+	logger.info(`${server.name} listening at ${server.url}`);
 });
